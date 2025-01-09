@@ -27,7 +27,7 @@ class CellStatus(enum.IntEnum):
     DEAD = 0
 
 
-def initialize_board() -> list[list[int]]:
+def initialize_board() -> list[list[CellStatus]]:
     """
     Инициализатор поля случайными значениями
     :return: Рандомно сгенерированное поле
@@ -36,7 +36,7 @@ def initialize_board() -> list[list[int]]:
 
 
 # Count live neighbors of a given cell
-def count_neighbors(board: list[list[int]], x: int, y: int) -> int:
+def count_neighbors(board: list[list[CellStatus]], x: int, y: int) -> int:
     """
     Функция подсчёта соседей данной клетки
     :param board: Текущее поле
@@ -55,8 +55,7 @@ def count_neighbors(board: list[list[int]], x: int, y: int) -> int:
     return neighbors
 
 
-# Update the board based on the rules of the Game of Life
-def update_board(board: list[list[int]]) -> list[list[int]]:
+def update_board(board: list[list[CellStatus]]) -> list[list[CellStatus]]:
     """
     Функция обновления поля
     :param board: Текущее поле
@@ -69,12 +68,12 @@ def update_board(board: list[list[int]]) -> list[list[int]]:
             match board[x][y]:
                 case 1:  # Живая клетка
                     if neighbors < 2 or neighbors > 3:
-                        board_copy[x][y] = 0  # Клетка умирает из-за перенаселения или одиночества
+                        board_copy[x][y] = CellStatus.DEAD  # Клетка умирает из-за перенаселения или одиночества
                     else:
-                        board_copy[x][y] = 1  # Клетка выживает
+                        board_copy[x][y] = CellStatus.ALIVE  # Клетка выживает
                 case 0:  # Мёртвая клетка
                     if neighbors == 3:
-                        board_copy[x][y] = 1  # В клетке зарождается жизнь
+                        board_copy[x][y] = CellStatus.ALIVE  # В клетке зарождается жизнь
     return board_copy
 
 
@@ -82,7 +81,7 @@ class GameOfLifeApp:
     """
     Основной класс интерфейса симуляции
     """
-    def __init__(self, root: tk.Tk):
+    def __init__(self, root: tk.Tk) -> None:
         self.root = root
         self.running = False
         self.root.title("Игра Жизнь")
@@ -139,7 +138,7 @@ class GameOfLifeApp:
         self.board[x][y] = 1 - self.board[x][y]
         self.draw_grid()
 
-    def toggle_auto_update(self):
+    def toggle_auto_update(self) -> None:
         """
         Метод переключения статуса автообновления
         :return: None
@@ -150,7 +149,7 @@ class GameOfLifeApp:
         else:
             self.start_button.config(text=ButtonText.START)
 
-    def clear_grid(self):
+    def clear_grid(self) -> None:
         """
         Метод очистки поля
         :return: None
@@ -158,7 +157,7 @@ class GameOfLifeApp:
         self.board = [[CellStatus.DEAD] * WIDTH for _ in range(HEIGHT)]
         self.draw_grid()
 
-    def auto_update_game(self):
+    def auto_update_game(self) -> None:
         """
         Метод для автообновления игры
         :return:
@@ -168,7 +167,7 @@ class GameOfLifeApp:
         self.root.after(1000 // UPDATES_PER_SECOND, self.auto_update_game)
 
 
-def main():
+def main() -> None:
     try:
         root = tk.Tk()
         app = GameOfLifeApp(root)
